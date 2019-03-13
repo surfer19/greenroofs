@@ -21,13 +21,10 @@ class Map extends React.Component {
                 center={center}
                 zoom={15}            
                 // attributionControl={true}
-                // zoomControl={true}                            
+                // zoomControl={true}
                 >                
-                <TileLayer
-                    
-                    url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
-                />
-                {/* <Circle center={center} color="red" fillColor="none" radius={1000} /> */}
+                <TileLayer url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'/>
+                {/* <Circle center={center} color="red" fillColor="none" radius={1000} /> */}                
 
                 <LayersControl position="topright">      
                     {/* <LayersControl.BaseLayer name="OpenStreetMap.Mapnik">
@@ -39,11 +36,10 @@ class Map extends React.Component {
                     
                     <LayersControl.Overlay name="Show heatmap">                        
                         <ImageOverlay   url={heatmapImg} 
-                                        bounds={[[49.91156 ,13.90904], [50.2512, 14.89781]]} 
-                                        opacity="0.5">
+                                            bounds={[[49.91156 ,13.90904], [50.2512, 14.89781]]}                                        
+                                            opacity="0.5">
                         </ImageOverlay>
                     </LayersControl.Overlay>
-
                     <LayersControl.Overlay name="Feature group">
                         <FeatureGroup color="purple">
                         <Popup>
