@@ -75,11 +75,32 @@ class Map extends React.Component {
         });
     }
 
-    // this.map = LeafletMap.map('mapid').setView([50.086385, 14.423693], 15)
+    onEachFeature(feature, layer) {        
+        if (feature.properties) { // && feature.properties.name) {
+            let labelContent ='Building is in critical area.'
+            // layer.bindPopup('building in first critical area');
+            if (feature.properties['Kategorie I']) {
+                if (feature.properties['Kategorie II']) {
+                    labelContent = '[LEVEL 1 and 2] Building is very suitable for green roof.'
+                }
+                else {
+                    labelContent = '[LEVEL 1] Building is very suitable for green roof.'
+                }
+            }
+            else if(feature.properties['Kategorie II']) {
+                labelContent = '[LEVEL 2] Building is very suitable for green roof.'
+            } 
+            else { 
+                labelContent = '[LEVEL 3/4] Building is in critical area.'
+            }
 
-    render() {
-        // console.log('ahoj', this.state.allBuildings)
-        
+            layer.bindPopup(labelContent, {closeButton: false});
+            layer.on('mouseover', function() { layer.openPopup(); });
+            layer.on('mouseout', function() { layer.closePopup(); });
+        }        
+    }
+
+    render() {        
         return (
             <div>
             <LeafletMap
@@ -90,12 +111,11 @@ class Map extends React.Component {
                 >
                 <TileLayer url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'></TileLayer>
                 
-                {/* <Circle center={center} color="red" fillColor="none" radius={1000} /> */}                
-
                 <LayersControl position="topright">                          
                     <LayersControl.Overlay name="Show all possible buildings">
                         { this.state && this.state.allBuildings &&
-                        <GeoJSON key={hash({a: Math.random() * 10})} data={this.state ? this.state.allBuildings : {'':''}} />                        
+                        <GeoJSON key={hash({a: Math.random() * 10})} data={this.state ? this.state.allBuildings : null} 
+                            onEachFeature={this.onEachFeature}/>
                         }
                     </LayersControl.Overlay>
 
@@ -104,18 +124,18 @@ class Map extends React.Component {
                             { this.state && this.state.allBuildings &&
                             <GeoJSON key={hash({a: Math.random() * 10})} data={this.state ? this.state.bbOneBuildings : null} 
                                 style= {                        
-                                    {                                        
-                                        fillColor: 'red',
-                                        weight: 2,
-                                        //stroke-width: to have a constant width on the screen need to adapt with scale 
+                                    {                                                                                
+                                        weight: 2,                                        
                                         opacity: 1,
                                         color: 'yellow',
-                                        dashArray: '5',
-                                        // fillOpacity: 0.5 
+                                        dashArray: '5',                                        
                                     }
-                                }/>                            
+                                }
+                                onEachFeature={this.onEachFeature}
+                                />
                             }
-                            <Rectangle bounds={bbOneBounds} color="blue" style ={{ dashArray: '4'}}/>
+                            <Rectangle bounds={bbOneBounds} color="blue"/>
+                            {/* <Rectangle bounds={bbOneBounds} color="blue" style ={{ dashArray: '4'}}/> */}
                         </LayerGroup>
                     </LayersControl.Overlay>
 
@@ -132,7 +152,9 @@ class Map extends React.Component {
                                         color: 'black',
                                         dashArray: '5',                                         
                                     }
-                                }/>
+                                }
+                                onEachFeature={this.onEachFeature}
+                                />
                             }
                             <Rectangle bounds={bbTwoBounds} color="purple"/>
                         </LayerGroup>
@@ -144,14 +166,18 @@ class Map extends React.Component {
                             { this.state && this.state.allBuildings &&
                                 <GeoJSON key={hash({a: Math.random() * 10})} data={this.state ? this.state.bbOneCatBuildings : null} 
                                 style= {                        
-                                    {                                        
-                                        fillColor: 'blue',
+                                    {   
+                                        fillColor: 'blue',                                      
+                                        fillOpacity: 0.7,
                                         weight: 2,                                        
                                         opacity: 1,
                                         color: 'blue',                                    
                                     }
-                                }/>
-                            }                            
+                                }
+                                onEachFeature={this.onEachFeature}
+                                />
+                            }
+                            <Rectangle bounds={bbOneBounds} color="blue"/>
                         </LayerGroup>
                     </LayersControl.Overlay>
 
@@ -159,21 +185,24 @@ class Map extends React.Component {
                         <LayerGroup>
                             { this.state && this.state.allBuildings &&
                                 <GeoJSON key={hash({a: Math.random() * 10})} data={this.state ? this.state.bbTwoCatBuildings : null} style={                                                     
-                                    {            
-                                        fillOpacity: 1,
+                                    {
+                                        fillOpacity: 0.7,
                                         weight: 2,                               
                                         opacity: 1,
-                                        color: 'white',
-                                    }                                
-                                } />
+                                        color: 'black',
+                                    }
+                                } 
+                                onEachFeature={this.onEachFeature}
+                                />
                             }
+                            <Rectangle bounds={bbTwoBounds} color="purple"/>
                         </LayerGroup>
                     </LayersControl.Overlay>        
                     
                     <LayersControl.Overlay name="Show heatmap">
                         <ImageOverlay url={heatmapImg} 
                                         bounds={[[49.91156 ,13.90904], [50.2512, 14.89781]]}                                        
-                                        opacity="0.7">
+                                        opacity="0.85">
                         </ImageOverlay>                        
                     </LayersControl.Overlay>
 
